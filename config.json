@@ -1,0 +1,82 @@
+{
+  "system": {
+    "name": "WhatsApp Reminder System",
+    "version": "1.0.0",
+    "environment": "production",
+    "logLevel": "info",
+    "maxRetries": 3,
+    "retryDelay": 5000
+  },
+  "whatsapp": {
+    "sessionPath": "sessions/whatsapp-session.json",
+    "autoReconnect": true,
+    "maxReconnectAttempts": 5,
+    "reconnectDelay": 5000,
+    "rateLimit": {
+      "messagesPerHour": 200,
+      "windowSize": 3600
+    }
+  },
+  "excel": {
+    "inputDir": "data/excel",
+    "processedDir": "data/excel/processed",
+    "backupDir": "data/excel/backup",
+    "fileExtensions": [".xlsx", ".xls"],
+    "headerMapping": {
+      "policy_number": "Policy Number",
+      "customer_name": "Customer Name",
+      "phone_number": "Phone Number",
+      "premium_amount": "Premium Amount",
+      "due_date": "Due Date",
+      "policy_status": "Policy Status",
+      "email": "Email",
+      "policy_type": "Policy Type",
+      "premium_frequency": "Premium Frequency",
+      "last_payment_date": "Last Payment Date",
+      "next_due_date": "Next Due Date"
+    }
+  },
+  "database": {
+    "path": "database.sqlite",
+    "backupPath": "data/backups/database.sqlite.backup",
+    "cleanup": {
+      "logs": 90,
+      "processedFiles": 30,
+      "oldSessions": 7
+    }
+  },
+  "scheduler": {
+    "hourlyCheck": "0 * * * *",
+    "dailyCleanup": "0 2 * * *",
+    "weeklyReport": "0 9 * * 1"
+  },
+  "reminders": {
+    "types": ["today", "two_days_before", "five_days_before"],
+    "messageTemplates": {
+      "today": "This is a friendly reminder that your LIC premium of ₹{amount} is due today ({date}). Please make the payment at your earliest convenience.",
+      "two_days_before": "Friendly reminder: Your LIC premium of ₹{amount} is due in 2 days ({date}). Please ensure timely payment.",
+      "five_days_before": "Advance notice: Your LIC premium of ₹{amount} is due on {date} ({days} days from now). Please plan your payment accordingly.",
+      "immediate": "Important: This is an urgent reminder for your LIC premium of ₹{amount} due on {date}. Please make the payment at your earliest convenience."
+    }
+  },
+  "logging": {
+    "level": "info",
+    "file": {
+      "maxSize": "10m",
+      "maxFiles": 7,
+      "path": "logs"
+    },
+    "console": {
+      "enabled": false
+    }
+  },
+  "healthCheck": {
+    "interval": 60000,
+    "timeout": 30000,
+    "endpoints": {
+      "status": "/health",
+      "metrics": "/metrics",
+      "logs": "/logs"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "whatsapp-reminder-system",
+  "version": "1.0.0",
+  "description": "A WhatsApp reminder system for LIC premium notifications",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "pm2": "pm2 start ecosystem.config.js",
+    "pm2:restart": "pm2 restart whatsapp-reminder-system",
+    "pm2:stop": "pm2 stop whatsapp-reminder-system",
+    "pm2:delete": "pm2 delete whatsapp-reminder-system",
+    "pm2:logs": "pm2 logs whatsapp-reminder-system",
+    "setup": "node setup.js",
+    "help": "node -e \"console.log('WhatsApp Reminder System Help:'); console.log('npm run setup - Create directories and example files'); console.log('npm start - Start in development mode'); console.log('npm run pm2 - Start in production mode'); console.log('npm run pm2:logs - View production logs'); console.log('npm run pm2:restart - Restart production'); console.log('npm run pm2:stop - Stop production'); console.log(''); console.log('API Endpoints:'); console.log('  /health - System health check'); console.log('  /metrics - System metrics'); console.log('  /logs - View logs'); console.log('  /status - System status'); console.log('  /config - Configuration management'); console.log(''); console.log('Excel File Format:'); console.log('  Policy Number, Customer Name, Phone Number, Premium Amount, Due Date'); console.log('  Optional: Policy Status, Email, Policy Type, Premium Frequency'); console.log(''); console.log('Place Excel files in: data/excel/'); console.log('For production: Use PM2 with ecosystem.config.js');\""
+  },
+  "keywords": [
+    "whatsapp",
+    "reminder",
+    "lic",
+    "premium",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.5.0",
+    "dotenv": "^16.3.1",
+    "exceljs": "^3.6.0",
+    "express": "^4.18.2",
+    "moment": "^2.29.4",
+    "node-cron": "^3.0.3",
+    "nodemon": "^3.0.2",
+    "pino": "^9.0.0",
+    "pm2": "^5.1.1",
+    "qrcode-terminal": "^0.12.0",
+    "rate-limiter-flexible": "^5.0.0",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
