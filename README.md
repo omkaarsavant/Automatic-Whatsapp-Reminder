@@ -2,6 +2,10 @@
 
 A premium, production-ready automation system designed to manage LIC premium reminders. It reads data directly from Excel files, handles complex scheduling (0, 2, and 5 days before due date), and operates entirely on **Indian Standard Time (IST)**.
 
+![wa](https://github.com/user-attachments/assets/858049a6-e16e-413a-80af-e939eee19766)
+<img width="1892" height="797" alt="Screenshot 2026-03-11 231355" src="https://github.com/user-attachments/assets/e02e5e8e-8333-4fea-8698-413035f6e254" />
+
+
 ---
 
 ## ✨ Key Features
@@ -89,6 +93,4 @@ The system monitors this directory for `.xlsx` files with these columns:
 - **Wakelock Support**: Integrated instructions for Termux to prevent Android from killing the process.
 
 ---
-
-**Built with ❤️ for reliable LIC automation.**
 *Last updated: March 2026*
