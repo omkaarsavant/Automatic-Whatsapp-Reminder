@@ -18,6 +18,7 @@ class WhatsAppService {
     this.sessionDir = path.join(__dirname, '../sessions/whatsapp-auth');
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
+    this.onConnectionRestored = null;
   }
 
   async init() {
@@ -96,6 +97,10 @@ class WhatsAppService {
         this.logger.info('WhatsApp connected successfully!');
         this.isConnected = true;
         this.reconnectAttempts = 0;
+
+        if (this.onConnectionRestored) {
+          this.onConnectionRestored();
+        }
       }
     });
   }

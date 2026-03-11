@@ -22,6 +22,12 @@ class ReminderScheduler {
       this.logger.info('Performing initial reminder check on startup...');
       await this.sendPendingReminders();
 
+      // Trigger a check whenever the connection is restored (e.g., coming back from offline)
+      this.whatsappService.onConnectionRestored = async () => {
+        this.logger.info('WhatsApp connection restored! Checking for pending reminders to catch up...');
+        await this.sendPendingReminders();
+      };
+
       // Set up auto-send on file change
       this.excelReader.onFileProcessed = async (filename) => {
         this.logger.info(`Triggering automatic reminder check for ${filename}...`);

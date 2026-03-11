@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LIC Premium Reminder Dashboard</title>
-  <meta name="description" content="Dashboard for LIC WhatsApp Premium Reminder System - Monitor reminders, metrics, and manage notifications.">
+  <meta name="description"
+    content="Dashboard for LIC WhatsApp Premium Reminder System - Monitor reminders, metrics, and manage notifications.">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg-primary: #0a0e1a;
@@ -47,7 +57,10 @@
     body::before {
       content: '';
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background:
         radial-gradient(ellipse 80% 50% at 20% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
         radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 60%),
@@ -56,7 +69,10 @@
       z-index: 0;
     }
 
-    .app { position: relative; z-index: 1; }
+    .app {
+      position: relative;
+      z-index: 1;
+    }
 
     /* Header */
     .header {
@@ -72,10 +88,15 @@
       z-index: 100;
     }
 
-    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
     .logo {
-      width: 42px; height: 42px;
+      width: 42px;
+      height: 42px;
       background: var(--gradient-primary);
       border-radius: 12px;
       display: flex;
@@ -100,7 +121,11 @@
       margin-left: 8px;
     }
 
-    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
     .status-badge {
       display: flex;
@@ -116,15 +141,25 @@
     }
 
     .status-dot {
-      width: 7px; height: 7px;
+      width: 7px;
+      height: 7px;
       background: var(--accent-emerald);
       border-radius: 50%;
       animation: pulse-dot 2s ease-in-out infinite;
     }
 
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+      }
+
+      50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
     }
 
     .btn {
@@ -182,17 +217,26 @@
     }
 
     .btn .spinner {
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: white;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* Main layout */
-    .main { padding: 32px 40px; max-width: 1440px; margin: 0 auto; }
+    .main {
+      padding: 32px 40px;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
 
     /* Stats row */
     .stats-grid {
@@ -215,16 +259,32 @@
     .stat-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 2px;
       border-radius: var(--radius) var(--radius) 0 0;
     }
 
-    .stat-card:nth-child(1)::before { background: var(--gradient-primary); }
-    .stat-card:nth-child(2)::before { background: var(--gradient-success); }
-    .stat-card:nth-child(3)::before { background: linear-gradient(135deg, var(--accent-amber), #ef4444); }
-    .stat-card:nth-child(4)::before { background: linear-gradient(135deg, var(--accent-violet), var(--accent-rose)); }
-    .stat-card:nth-child(5)::before { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald)); }
+    .stat-card:nth-child(1)::before {
+      background: var(--gradient-primary);
+    }
+
+    .stat-card:nth-child(2)::before {
+      background: var(--gradient-success);
+    }
+
+    .stat-card:nth-child(3)::before {
+      background: linear-gradient(135deg, var(--accent-amber), #ef4444);
+    }
+
+    .stat-card:nth-child(4)::before {
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-rose));
+    }
+
+    .stat-card:nth-child(5)::before {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald));
+    }
 
     .stat-card:hover {
       border-color: var(--border-glow);
@@ -258,8 +318,13 @@
       gap: 4px;
     }
 
-    .stat-change.positive { color: var(--accent-emerald); }
-    .stat-change.neutral { color: var(--text-muted); }
+    .stat-change.positive {
+      color: var(--accent-emerald);
+    }
+
+    .stat-change.neutral {
+      color: var(--text-muted);
+    }
 
     /* Section layout */
     .sections-grid {
@@ -269,7 +334,9 @@
       margin-bottom: 28px;
     }
 
-    .sections-grid.full { grid-template-columns: 1fr; }
+    .sections-grid.full {
+      grid-template-columns: 1fr;
+    }
 
     .card {
       background: var(--bg-card);
@@ -299,9 +366,13 @@
       gap: 8px;
     }
 
-    .card-title .icon { opacity: 0.7; }
+    .card-title .icon {
+      opacity: 0.7;
+    }
 
-    .card-body { padding: 20px 24px; }
+    .card-body {
+      padding: 20px 24px;
+    }
 
     /* Charts */
     .chart-container {
@@ -310,7 +381,9 @@
       width: 100%;
     }
 
-    .chart-container.small { height: 200px; }
+    .chart-container.small {
+      height: 200px;
+    }
 
     /* Tables */
     .data-table {
@@ -336,9 +409,13 @@
       border-bottom: 1px solid rgba(42, 48, 80, 0.4);
     }
 
-    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
 
-    .data-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
 
     .badge {
       display: inline-flex;
@@ -349,12 +426,35 @@
       font-weight: 600;
     }
 
-    .badge-blue { background: rgba(59, 130, 246, 0.12); color: var(--accent-blue); }
-    .badge-green { background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald); }
-    .badge-amber { background: rgba(245, 158, 11, 0.12); color: var(--accent-amber); }
-    .badge-rose { background: rgba(244, 63, 94, 0.12); color: var(--accent-rose); }
-    .badge-violet { background: rgba(139, 92, 246, 0.12); color: var(--accent-violet); }
-    .badge-cyan { background: rgba(6, 182, 212, 0.12); color: var(--accent-cyan); }
+    .badge-blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--accent-blue);
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent-emerald);
+    }
+
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--accent-amber);
+    }
+
+    .badge-rose {
+      background: rgba(244, 63, 94, 0.12);
+      color: var(--accent-rose);
+    }
+
+    .badge-violet {
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-violet);
+    }
+
+    .badge-cyan {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--accent-cyan);
+    }
 
     /* File list */
     .file-item {
@@ -365,12 +465,19 @@
       border-bottom: 1px solid rgba(42, 48, 80, 0.4);
     }
 
-    .file-item:last-child { border-bottom: none; }
+    .file-item:last-child {
+      border-bottom: none;
+    }
 
-    .file-info { display: flex; align-items: center; gap: 10px; }
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .file-icon {
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -380,8 +487,17 @@
       color: var(--accent-emerald);
     }
 
-    .file-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
-    .file-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .file-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .file-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
 
     /* Empty state */
     .empty-state {
@@ -390,8 +506,15 @@
       color: var(--text-muted);
     }
 
-    .empty-state-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
-    .empty-state-text { font-size: 13px; }
+    .empty-state-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .empty-state-text {
+      font-size: 13px;
+    }
 
     /* Toast notification */
     .toast {
@@ -410,22 +533,56 @@
       box-shadow: var(--shadow-card);
     }
 
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--accent-emerald); }
-    .toast.error { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: var(--accent-rose); }
-    .toast.info { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--accent-blue); }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-emerald);
+    }
+
+    .toast.error {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+    }
+
+    .toast.info {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent-blue);
+    }
 
     /* Responsive */
     @media (max-width: 1024px) {
-      .sections-grid { grid-template-columns: 1fr; }
-      .main { padding: 20px; }
-      .header { padding: 16px 20px; }
-      .stats-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+      .sections-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        padding: 20px;
+      }
+
+      .header {
+        padding: 16px 20px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
     }
 
     @media (max-width: 640px) {
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-      .header h1 span { display: none; }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .header h1 span {
+        display: none;
+      }
     }
 
     /* Loading skeleton */
@@ -437,8 +594,13 @@
     }
 
     @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
     }
 
     .refresh-timer {
@@ -452,26 +614,30 @@
       width: 6px;
       height: 6px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.02);
       border-radius: 10px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: var(--border);
       border-radius: 10px;
       transition: background 0.3s ease;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: var(--border-glow);
     }
   </style>
 </head>
+
 <body>
   <div class="app">
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <div class="logo">L</div>
+
         <h1>LIC Reminder<span>Dashboard</span></h1>
       </div>
       <div class="header-right">
@@ -481,13 +647,13 @@
           System Online
         </div>
         <button class="btn btn-ghost" id="btnRefresh" onclick="loadDashboard()">
-          ↻ Refresh
+          Refresh
         </button>
         <button class="btn btn-primary" id="btnProcess" onclick="triggerProcess()">
-          ▶ Process Now
+          Process Now
         </button>
         <button class="btn btn-danger" id="btnSendAll" onclick="sendImmediate()">
-          ⚡ Send All Now
+          Send All Now
         </button>
       </div>
     </header>
@@ -527,7 +693,7 @@
       <section class="sections-grid">
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">📊</span> Daily Send Volume</div>
+            <div class="card-title">Daily Send Volume</div>
             <span class="badge badge-blue">Last 30 days</span>
           </div>
           <div class="card-body">
@@ -538,7 +704,7 @@
         </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">🎯</span> Reminders by Type</div>
+            <div class="card-title">Reminders by Type</div>
           </div>
           <div class="card-body">
             <div class="chart-container">
@@ -552,7 +718,7 @@
       <section class="sections-grid">
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">📨</span> Recent Reminders</div>
+            <div class="card-title">Recent Reminders</div>
             <span class="badge badge-cyan" id="recentCount">0 total</span>
           </div>
           <div class="card-body" style="padding: 0;">
@@ -569,10 +735,11 @@
                   </tr>
                 </thead>
                 <tbody id="recentBody">
-                  <tr><td colspan="6" class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <div class="empty-state-text">No reminders sent yet</div>
-                  </td></tr>
+                  <tr>
+                    <td colspan="6" class="empty-state">
+                      <div class="empty-state-text">No reminders sent yet</div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -580,12 +747,11 @@
         </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">📁</span> Excel Files</div>
+            <div class="card-title">Excel Files</div>
             <span class="badge badge-green" id="filesCount">0 files</span>
           </div>
           <div class="card-body" id="filesList" style="height: 380px; overflow-y: auto;" class="custom-scrollbar">
             <div class="empty-state">
-              <div class="empty-state-icon">📂</div>
               <div class="empty-state-text">No Excel files found</div>
             </div>
           </div>
@@ -596,7 +762,7 @@
       <section class="sections-grid full">
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">🕒</span> Planning to Send (Queue)</div>
+            <div class="card-title">Planning to Send (Queue)</div>
             <span class="badge badge-rose" id="pendingQueueCount">0 queued</span>
           </div>
           <div class="card-body" style="padding: 0;">
@@ -614,10 +780,11 @@
                   </tr>
                 </thead>
                 <tbody id="pendingQueueBody">
-                  <tr><td colspan="7" class="empty-state">
-                    <div class="empty-state-icon">⌛</div>
-                    <div class="empty-state-text">No messages queued for send</div>
-                  </td></tr>
+                  <tr>
+                    <td colspan="7" class="empty-state">
+                      <div class="empty-state-text">No messages queued for send</div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -629,7 +796,7 @@
       <section class="sections-grid full">
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><span class="icon">📅</span> Upcoming Premiums</div>
+            <div class="card-title">Upcoming Premiums</div>
             <span class="badge badge-amber" id="upcomingCount">0 records</span>
           </div>
           <div class="card-body" style="padding: 0;">
@@ -648,10 +815,11 @@
                   </tr>
                 </thead>
                 <tbody id="upcomingBody">
-                  <tr><td colspan="8" class="empty-state">
-                    <div class="empty-state-icon">📋</div>
-                    <div class="empty-state-text">No upcoming premiums</div>
-                  </td></tr>
+                  <tr>
+                    <td colspan="8" class="empty-state">
+                      <div class="empty-state-text">No upcoming premiums</div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -906,7 +1074,6 @@
 
       if (items.length === 0) {
         body.innerHTML = `<tr><td colspan="6" class="empty-state">
-          <div class="empty-state-icon">📭</div>
           <div class="empty-state-text">No reminders sent yet</div>
         </td></tr>`;
         return;
@@ -924,7 +1091,7 @@
           <td style="font-family: 'Space Mono', monospace; font-size: 12px;">${r.phone_number}</td>
           <td>${typeBadge}</td>
           <td>${sentDate}</td>
-          <td><span class="badge badge-green">✓ Sent</span></td>
+          <td><span class="badge badge-green">Sent</span></td>
         </tr>`;
       }).join('');
     }
@@ -952,7 +1119,6 @@
 
       if (items.length === 0) {
         body.innerHTML = `<tr><td colspan="7" class="empty-state">
-          <div class="empty-state-icon">⌛</div>
           <div class="empty-state-text">No messages queued for send</div>
         </td></tr>`;
         return;
@@ -965,7 +1131,7 @@
           timeZone: 'Asia/Kolkata',
           day: 'numeric', month: 'short', year: 'numeric'
         });
-        
+
         return `<tr>
           <td style="font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text-primary);">${r.policy_number}</td>
           <td>${r.customer_name}</td>
@@ -973,7 +1139,7 @@
           <td>₹${r.premium_amount.toLocaleString('en-IN')}</td>
           <td>${formattedDate}</td>
           <td>${typeBadge}</td>
-          <td><span class="badge badge-amber">🕒 Preparing</span></td>
+          <td><span class="badge badge-amber">Preparing</span></td>
         </tr>`;
       }).join('');
     }
@@ -988,14 +1154,13 @@
 
       if (items.length === 0) {
         container.innerHTML = `<div class="empty-state">
-          <div class="empty-state-icon">📂</div>
           <div class="empty-state-text">No Excel files in data/excel/</div>
         </div>`;
         return;
       }
 
       container.innerHTML = items.map(f => {
-        const status = f.changed ? '🔄 Changed' : (f.processed ? '✅ Processed' : '🆕 New');
+        const status = f.changed ? 'Changed' : (f.processed ? 'Processed' : 'New');
         const size = (f.size / 1024).toFixed(1) + ' KB';
         const mod = new Date(f.modified).toLocaleString('en-IN', {
           timeZone: 'Asia/Kolkata',
@@ -1003,7 +1168,6 @@
         });
         return `<div class="file-item">
           <div class="file-info">
-            <div class="file-icon">📄</div>
             <div>
               <div class="file-name">${f.name}</div>
               <div class="file-meta">${size} · Modified ${mod}</div>
@@ -1024,7 +1188,6 @@
 
       if (items.length === 0) {
         body.innerHTML = `<tr><td colspan="8" class="empty-state">
-          <div class="empty-state-icon">📋</div>
           <div class="empty-state-text">No upcoming premiums in the next 30 days</div>
         </td></tr>`;
         return;
@@ -1032,9 +1195,9 @@
 
       body.innerHTML = items.slice(0, 20).map(r => {
         const dueDate = new Date(r.due_date);
-        dueDate.setHours(0,0,0,0);
-        const today = new Date(); 
-        today.setHours(0,0,0,0);
+        dueDate.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const diffTime = dueDate.getTime() - today.getTime();
         const daysUntil = Math.round(diffTime / (1000 * 60 * 60 * 24));
         let dueBadge = '';
@@ -1088,18 +1251,18 @@
         const res = await fetch('/trigger');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        showToast(`✅ Processing complete! ${data.stats?.remindersSent || 0} reminders in queue.`, 'success');
+        showToast(`Processing complete! ${data.stats?.remindersSent || 0} reminders in queue.`, 'success');
         loadDashboard();
       } catch (err) {
-        showToast(`❌ Processing failed: ${err.message}`, 'error');
+        showToast(`Processing failed: ${err.message}`, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '▶ Process Now';
+        btn.innerHTML = 'Process Now';
       }
     }
 
     async function sendImmediate() {
-      if (!confirm('⚠️ Send immediate reminders to ALL active policies?\n\nThis will send WhatsApp messages now, regardless of due date.')) return;
+      if (!confirm('Send immediate reminders to ALL active policies?\n\nThis will send WhatsApp messages now, regardless of due date.')) return;
 
       const btn = document.getElementById('btnSendAll');
       btn.disabled = true;
@@ -1113,13 +1276,13 @@
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        showToast(`⚡ Sent ${data.result?.sent || 0} / ${data.result?.total || 0} reminders. ${data.result?.failed || 0} failed.`, 'success');
+        showToast(`Sent ${data.result?.sent || 0} / ${data.result?.total || 0} reminders. ${data.result?.failed || 0} failed.`, 'success');
         loadDashboard();
       } catch (err) {
-        showToast(`❌ Send failed: ${err.message}`, 'error');
+        showToast(`Send failed: ${err.message}`, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '⚡ Send All Now';
+        btn.innerHTML = 'Send All Now';
       }
     }
 
@@ -1131,4 +1294,5 @@
     }
   </script>
 </body>
+
 </html>
