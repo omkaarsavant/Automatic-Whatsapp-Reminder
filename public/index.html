@@ -775,6 +775,7 @@
                     <th>Phone</th>
                     <th>Premium</th>
                     <th>Due Date</th>
+                    <th>Freq</th>
                     <th>Reminder Type</th>
                     <th>Status</th>
                   </tr>
@@ -1138,6 +1139,7 @@
           <td style="font-family: 'Space Mono', monospace; font-size: 12px;">${r.phone_number}</td>
           <td>₹${r.premium_amount.toLocaleString('en-IN')}</td>
           <td>${formattedDate}</td>
+          <td>${r.premium_frequency || '—'}</td>
           <td>${typeBadge}</td>
           <td><span class="badge badge-amber">Preparing</span></td>
         </tr>`;

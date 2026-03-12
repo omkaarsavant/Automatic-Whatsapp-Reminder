@@ -225,15 +225,14 @@ class ExcelReaderService {
       const row = worksheet.getRow(rowNum);
       if (this.isEmptyRow(row)) continue;
 
-      const record = this.parseRow(row, headers);
-      if (record) {
-        records.push(record);
+      const rowRecords = this.parseRow(row, headers);
+      if (rowRecords && Array.isArray(rowRecords)) {
+        records.push(...rowRecords);
       }
     }
 
     // Sync: remove records from DB that are no longer in this file
-    const currentPolicyNumbers = records.map(r => r.policy_number);
-    const deleted = await this.database.deleteRecordsNotInList(fileName, currentPolicyNumbers);
+    const deleted = await this.database.deleteRecordsNotInList(fileName, records);
     if (deleted > 0) {
       this.logger.info(`Removed ${deleted} stale records no longer in ${fileName}`);
     }
@@ -273,12 +272,11 @@ class ExcelReaderService {
 
   parseRow(row, headers) {
     try {
-      const record = {
+      const baseRecord = {
         policy_number: row.getCell(this.getColumnIndex(headers, 'policy_number')).text.trim(),
         customer_name: row.getCell(this.getColumnIndex(headers, 'customer_name')).text.trim(),
         phone_number: row.getCell(this.getColumnIndex(headers, 'phone_number')).text.trim(),
         premium_amount: parseFloat(row.getCell(this.getColumnIndex(headers, 'premium_amount')).text.trim()) || 0,
-        due_date: this.parseDate(row.getCell(this.getColumnIndex(headers, 'due_date')).text.trim()),
         policy_status: row.getCell(this.getColumnIndex(headers, 'policy_status')).text.trim().toLowerCase(),
         email: row.getCell(this.getColumnIndex(headers, 'email')).text.trim(),
         policy_type: row.getCell(this.getColumnIndex(headers, 'policy_type')).text.trim(),
@@ -287,12 +285,28 @@ class ExcelReaderService {
         next_due_date: this.parseDate(row.getCell(this.getColumnIndex(headers, 'next_due_date')).text.trim())
       };
 
-      if (!this.validateRecord(record)) {
-        this.logger.warn(`Invalid record: ${JSON.stringify(record)}`);
-        return null;
+      // Find all due date columns (due_date, due_date_1, due_date_2, etc.)
+      const dueDateColumns = Object.entries(headers)
+        .filter(([col, name]) => name.startsWith('due_date'))
+        .map(([col, name]) => parseInt(col));
+
+      const records = [];
+      for (const col of dueDateColumns) {
+        const dateText = row.getCell(col).text.trim();
+        if (!dateText) continue;
+
+        const dueDate = this.parseDate(dateText);
+        if (dueDate) {
+          records.push({
+            ...baseRecord,
+            due_date: dueDate
+          });
+        }
       }
 
-      return record;
+      // Filter and return only valid records
+      const validRecords = records.filter(r => this.validateRecord(r));
+      return validRecords.length > 0 ? validRecords : null;
     } catch (error) {
       this.logger.error(`Error parsing row: ${error.message}`);
       return null;

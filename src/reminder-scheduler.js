@@ -106,8 +106,8 @@ class ReminderScheduler {
           
           // Mark as fully processed ONLY if it was the final 'today' reminder
           if (reminder.reminder_type === 'today') {
-            await this.database.markRecordProcessed(reminder.policy_number);
-            this.logger.info(`Policy ${reminder.policy_number} fully processed after today's final reminder`);
+            await this.database.markRecordProcessed(reminder.policy_number, reminder.due_date);
+            this.logger.info(`Policy ${reminder.policy_number} for date ${reminder.due_date} fully processed after today's final reminder`);
           }
         } catch (error) {
           this.logger.error(`Failed to send reminder for policy ${reminder.policy_number}:`, error);
@@ -170,6 +170,7 @@ class ReminderScheduler {
       phone_number: reminder.phone_number,
       message: message,
       reminder_type: reminder.reminder_type,
+      due_date: reminder.due_date,
       sent_at: new Date().toISOString()
     });
 

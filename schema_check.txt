@@ -1,0 +1,263 @@
+--- RECORDS TABLE ---
+[
+  {
+    "cid": 0,
+    "name": "id",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 1
+  },
+  {
+    "cid": 1,
+    "name": "policy_number",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 2,
+    "name": "customer_name",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 3,
+    "name": "phone_number",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 4,
+    "name": "premium_amount",
+    "type": "REAL",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 5,
+    "name": "due_date",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 6,
+    "name": "policy_status",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 7,
+    "name": "email",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 8,
+    "name": "policy_type",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 9,
+    "name": "premium_frequency",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 10,
+    "name": "last_payment_date",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 11,
+    "name": "next_due_date",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 12,
+    "name": "source_file",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 13,
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "notnull": 0,
+    "dflt_value": "datetime('now', 'localtime')",
+    "pk": 0
+  },
+  {
+    "cid": 14,
+    "name": "updated_at",
+    "type": "TIMESTAMP",
+    "notnull": 0,
+    "dflt_value": "datetime('now', 'localtime')",
+    "pk": 0
+  },
+  {
+    "cid": 15,
+    "name": "processed_at",
+    "type": "TIMESTAMP",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  }
+]
+--- SENT_REMINDERS TABLE ---
+[
+  {
+    "cid": 0,
+    "name": "id",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 1
+  },
+  {
+    "cid": 1,
+    "name": "policy_number",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 2,
+    "name": "phone_number",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 3,
+    "name": "message",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 4,
+    "name": "reminder_type",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 5,
+    "name": "sent_at",
+    "type": "TIMESTAMP",
+    "notnull": 0,
+    "dflt_value": "CURRENT_TIMESTAMP",
+    "pk": 0
+  },
+  {
+    "cid": 6,
+    "name": "status",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": "'sent'",
+    "pk": 0
+  },
+  {
+    "cid": 7,
+    "name": "error_message",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  },
+  {
+    "cid": 8,
+    "name": "target_due_date",
+    "type": "TEXT",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 0
+  }
+]
+--- INDEXES ON RECORDS ---
+[
+  {
+    "seq": 0,
+    "name": "idx_records_source_file",
+    "unique": 0,
+    "origin": "c",
+    "partial": 0
+  },
+  {
+    "seq": 1,
+    "name": "idx_records_phone_number",
+    "unique": 0,
+    "origin": "c",
+    "partial": 0
+  },
+  {
+    "seq": 2,
+    "name": "idx_records_due_date",
+    "unique": 0,
+    "origin": "c",
+    "partial": 0
+  },
+  {
+    "seq": 3,
+    "name": "idx_policy_due",
+    "unique": 1,
+    "origin": "c",
+    "partial": 0
+  },
+  {
+    "seq": 4,
+    "name": "sqlite_autoindex_records_1",
+    "unique": 1,
+    "origin": "u",
+    "partial": 0
+  }
+]
+RECORDS SQL: CREATE TABLE records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            policy_number TEXT NOT NULL,
+            customer_name TEXT NOT NULL,
+            phone_number TEXT NOT NULL,
+            premium_amount REAL NOT NULL,
+            due_date TEXT NOT NULL,
+            policy_status TEXT NOT NULL,
+            email TEXT,
+            policy_type TEXT,
+            premium_frequency TEXT,
+            last_payment_date TEXT,
+            next_due_date TEXT,
+            source_file TEXT,
+            created_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+            updated_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+            processed_at TIMESTAMP,
+            UNIQUE(policy_number, due_date)
+          )

@@ -29,7 +29,7 @@ class Database {
     const createTablesSql = `
       CREATE TABLE IF NOT EXISTS records (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        policy_number TEXT UNIQUE NOT NULL,
+        policy_number TEXT NOT NULL,
         customer_name TEXT NOT NULL,
         phone_number TEXT NOT NULL,
         premium_amount REAL NOT NULL,
@@ -43,7 +43,8 @@ class Database {
         source_file TEXT,
         created_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
         updated_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
-        processed_at TIMESTAMP
+        processed_at TIMESTAMP,
+        UNIQUE(policy_number, due_date)
       );
 
       CREATE TABLE IF NOT EXISTS sent_reminders (
@@ -52,6 +53,7 @@ class Database {
         phone_number TEXT NOT NULL,
         message TEXT NOT NULL,
         reminder_type TEXT NOT NULL,
+        target_due_date TEXT,
         sent_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
         status TEXT DEFAULT 'sent',
         error_message TEXT
@@ -100,11 +102,94 @@ class Database {
       await this.runSql('ALTER TABLE records ADD COLUMN source_file TEXT');
     }
 
+    // Verify and fix records table unique constraint
+    try {
+      const tableInfo = await this.getSql("SELECT sql FROM sqlite_master WHERE name='records'");
+      const sql = tableInfo.sql;
+      
+      // If the table definition contains "policy_number TEXT UNIQUE", we need to rebuild it
+      if (sql.includes('policy_number TEXT UNIQUE')) {
+        this.logger.info('Migrating database: rebuilding records table to remove strict unique constraint...');
+        
+        // 1. Rename old table
+        await this.runSql('ALTER TABLE records RENAME TO records_old');
+        
+        // 2. Create new table with correct schema
+        await this.runSql(`
+          CREATE TABLE records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            policy_number TEXT NOT NULL,
+            customer_name TEXT NOT NULL,
+            phone_number TEXT NOT NULL,
+            premium_amount REAL NOT NULL,
+            due_date TEXT NOT NULL,
+            policy_status TEXT NOT NULL,
+            email TEXT,
+            policy_type TEXT,
+            premium_frequency TEXT,
+            last_payment_date TEXT,
+            next_due_date TEXT,
+            source_file TEXT,
+            created_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+            updated_at TIMESTAMP DEFAULT (datetime('now', 'localtime')),
+            processed_at TIMESTAMP,
+            UNIQUE(policy_number, due_date)
+          )
+        `);
+        
+        // 3. Copy data (ignoring duplicates if any already exist somehow)
+        await this.runSql(`
+          INSERT OR IGNORE INTO records (
+            id, policy_number, customer_name, phone_number, premium_amount, due_date,
+            policy_status, email, policy_type, premium_frequency, last_payment_date, 
+            next_due_date, source_file, created_at, updated_at, processed_at
+          )
+          SELECT 
+            id, policy_number, customer_name, phone_number, premium_amount, due_date,
+            policy_status, email, policy_type, premium_frequency, last_payment_date, 
+            next_due_date, source_file, created_at, updated_at, processed_at
+          FROM records_old
+        `);
+        
+        // 4. Drop old table
+        await this.runSql('DROP TABLE records_old');
+        this.logger.info('Records table rebuilt successfully with composite unique key');
+      }
+    } catch (e) {
+      this.logger.error('Migration error (records rebuild):', e.message);
+    }
+
+    // Ensure target_due_date exists in sent_reminders
+    try {
+      await this.runSql('SELECT target_due_date FROM sent_reminders LIMIT 1');
+    } catch (e) {
+      this.logger.info('Migrating database: adding target_due_date to sent_reminders...');
+      await this.runSql('ALTER TABLE sent_reminders ADD COLUMN target_due_date TEXT');
+    }
+
+    // Update unique constraint to (policy_number, due_date)
+    try {
+      // SQLite doesn't support DROP CONSTRAINT well, so we use a different approach
+      // but first check if we already have the new index pattern
+      const indexInfo = await this.allSql("PRAGMA index_list('records')");
+      const hasCompositeIndex = indexInfo.some(idx => idx.name === 'idx_policy_due');
+      
+      if (!hasCompositeIndex) {
+        this.logger.info('Migrating database: adding composite unique index (policy_number, due_date)...');
+        // Remove the old unique constraint if possible, but since it was defined in CREATE TABLE directly,
+        // we'll just add a new UNIQUE index and stop using the old one if we were to recreate the table.
+        // For now, adding a named UNIQUE index is the most robust way to ensure we can check it.
+        await this.runSql('CREATE UNIQUE INDEX IF NOT EXISTS idx_policy_due ON records(policy_number, due_date)');
+      }
+    } catch (e) {
+      this.logger.error('Migration error (composite index):', e.message);
+    }
     // Ensure indexes exist
     const indexSql = `
       CREATE INDEX IF NOT EXISTS idx_records_due_date ON records(due_date);
       CREATE INDEX IF NOT EXISTS idx_records_phone_number ON records(phone_number);
       CREATE INDEX IF NOT EXISTS idx_records_source_file ON records(source_file);
+      CREATE INDEX IF NOT EXISTS idx_sent_policy_date ON sent_reminders(policy_number, target_due_date);
       CREATE INDEX IF NOT EXISTS idx_sent_reminders_policy_number ON sent_reminders(policy_number);
       CREATE INDEX IF NOT EXISTS idx_sent_reminders_sent_at ON sent_reminders(sent_at);
       CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
@@ -203,13 +288,28 @@ class Database {
     return result.changes;
   }
 
-  async deleteRecordsNotInList(sourceFile, policyNumbers) {
-    if (!policyNumbers || policyNumbers.length === 0) {
+  async deleteRecordsNotInList(sourceFile, records) {
+    if (!records || records.length === 0) {
       return await this.deleteRecordsBySource(sourceFile);
     }
-    const placeholders = policyNumbers.map(() => '?').join(',');
-    const sql = `DELETE FROM records WHERE (source_file = ? OR source_file IS NULL) AND policy_number NOT IN (${placeholders})`;
-    const result = await this.runSql(sql, [sourceFile, ...policyNumbers]);
+
+    // To handle composite keys (policy_number, due_date), we delete anything from this source
+    // that doesn't match a (policy, date) pair in our current list.
+    const formatDate = (dt) => {
+      const d = new Date(dt);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    // Construct pairs for the query
+    const pairs = records.map(r => `('${r.policy_number}', '${formatDate(r.due_date)}')`).join(',');
+    
+    const sql = `
+      DELETE FROM records 
+      WHERE source_file = ? 
+      AND (policy_number, due_date) NOT IN (${pairs})
+    `;
+    
+    const result = await this.runSql(sql, [sourceFile]);
     return result.changes;
   }
 
@@ -223,39 +323,55 @@ class Database {
     return await this.allSql(sql);
   }
 
-  async markRecordProcessed(policyNumber) {
+  async markRecordProcessed(policyNumber, dueDate) {
     const sql = `
       UPDATE records
       SET processed_at = ?
-      WHERE policy_number = ?
+      WHERE policy_number = ? AND due_date = ?
     `;
 
-    await this.runSql(sql, [new Date().toLocaleString('sv-SE').replace(' ', 'T'), policyNumber]);
+    // Ensure dueDate is in YYYY-MM-DD format for matching
+    const formattedDate = dueDate instanceof Date ? 
+      `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}` : 
+      dueDate;
+
+    await this.runSql(sql, [new Date().toLocaleString('sv-SE').replace(' ', 'T'), policyNumber, formattedDate]);
   }
 
   async saveSentReminder(reminder) {
     const sql = `
-      INSERT INTO sent_reminders (policy_number, phone_number, message, reminder_type, status, error_message)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO sent_reminders (policy_number, phone_number, message, reminder_type, target_due_date, status, error_message)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
+
+    // Format target_due_date consistently
+    const targetDate = reminder.due_date instanceof Date ? 
+      `${reminder.due_date.getFullYear()}-${String(reminder.due_date.getMonth() + 1).padStart(2, '0')}-${String(reminder.due_date.getDate()).padStart(2, '0')}` : 
+      reminder.due_date;
 
     await this.runSql(sql, [
       reminder.policy_number,
       reminder.phone_number,
       reminder.message,
       reminder.reminder_type,
+      targetDate,
       'sent',
       null
     ]);
   }
 
   async hasReminderBeenSent(policyNumber, dueDate, reminderType) {
+    // Format dueDate consistently for comparison
+    const targetDate = dueDate instanceof Date ? 
+      `${dueDate.getFullYear()}-${String(dueDate.getMonth() + 1).padStart(2, '0')}-${String(dueDate.getDate()).padStart(2, '0')}` : 
+      dueDate;
+
     const sql = `
       SELECT COUNT(*) as count FROM sent_reminders
       WHERE policy_number = ? AND reminder_type = ?
-      AND date(sent_at) = date(?)
+      AND date(target_due_date) = date(?)
     `;
-    const result = await this.getSingleSql(sql, [policyNumber, reminderType, dueDate]);
+    const result = await this.getSingleSql(sql, [policyNumber, reminderType, targetDate]);
     return result && result.count > 0;
   }
 
@@ -263,7 +379,7 @@ class Database {
     const sql = `
       SELECT sr.*, r.customer_name, r.premium_amount, r.due_date, r.policy_type
       FROM sent_reminders sr
-      LEFT JOIN records r ON sr.policy_number = r.policy_number
+      LEFT JOIN records r ON sr.policy_number = r.policy_number AND date(sr.target_due_date) = date(r.due_date)
       ORDER BY sr.sent_at DESC
       LIMIT ?
     `;
