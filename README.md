@@ -99,5 +99,4 @@ The system monitors this directory for `.xlsx` files with these columns:
 
 ---
 
-**Built with ❤️ for reliable LIC automation.**
 *Last updated: March 2026*
